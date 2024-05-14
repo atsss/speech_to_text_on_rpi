@@ -1,6 +1,6 @@
 pyaudio
 SpeechRecognition
---extra-index-url https://download.pytorch.org/whl/cu116
+--index-url https://download.pytorch.org/whl/cpu
 torch
 numpy
 openai-whisper
