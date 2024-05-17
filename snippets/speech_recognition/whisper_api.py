@@ -13,7 +13,7 @@ with sr.Microphone(device_index=0) as source:
 
 # recognize speech using whisper
 try:
-    print("Whisper thinks you said " + r.recognize_whisper_api(audio, model='whisper-1', api_key: API_KEY))
+    print("Whisper thinks you said " + r.recognize_whisper_api(audio, model='whisper-1', api_key=API_KEY))
 except sr.UnknownValueError:
     print("Whisper could not understand audio")
 except sr.RequestError as e:
