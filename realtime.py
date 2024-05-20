@@ -13,10 +13,6 @@ class SpeechRecognizer:
         self.mic = sr.Microphone()
         self.speech = []
 
-        print("Listening surrounding!")
-        self.rec.adjust_for_ambient_noise(source)
-        return
-
     def grab_audio(self) -> sr.AudioData:
         print("Say something!")
         with self.mic as source:
@@ -26,7 +22,7 @@ class SpeechRecognizer:
     def recognize_audio(self, audio: sr.AudioData) -> str:
         print("Understanting!")
         try:
-            speech = self.rec.recognize_whisper_api(audio, model='whisper-1', api_key=API_KEY))
+            speech = self.rec.recognize_whisper_api(audio, model='whisper-1', api_key=API_KEY)
         except sr.UnknownValueError:
             speech = "# Failed to recognize speech"
             print(speech)
@@ -36,20 +32,23 @@ class SpeechRecognizer:
         return speech
 
     def run(self):
-        while True:
-            audio = self.grab_audio()
-            speech = self.recognize_audio(audio)
+        print("Listening surrounding!")
+        with self.mic as source:
+            self.rec.adjust_for_ambient_noise(source, duration=5)
 
-            if speech == "Thank you":
-                print("Finishing!")
-                break
-            else:
+        try:
+            while True:
+                audio = self.grab_audio()
+                speech = self.recognize_audio(audio)
+
                 self.speech.append(speech)
                 print(speech)
-
-        with open(self.path, mode='w', encoding="utf-8") as out:
-            out.write(datetime.now().strftime('%Y%m%d_%H:%M:%S') + "\n\n")
-            out.write("\n".join(self.speech) + "\n")
+        except KeyboardInterrupt:
+          print("Finished")
+        finally:
+            with open(self.path, mode='w', encoding="utf-8") as out:
+                out.write(datetime.now().strftime('%Y%m%d_%H:%M:%S') + "\n\n")
+                out.write("\n".join(self.speech) + "\n")
 
 if __name__ == "__main__":
     sp = SpeechRecognizer()
