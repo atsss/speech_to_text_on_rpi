@@ -2,6 +2,7 @@ import os
 import speech_recognition as sr
 from datetime import datetime
 
+API_KEY = ''
 
 class SpeechRecognizer:
     """マイクで受け取った音声を認識してファイル出力するクラス
@@ -13,6 +14,9 @@ class SpeechRecognizer:
         self.rec = sr.Recognizer()
         self.mic = sr.Microphone()
         self.speech = []
+
+        print("Listening surrounding!")
+        self.rec.adjust_for_ambient_noise(source)
         return
 
     def grab_audio(self) -> sr.AudioData:
@@ -21,16 +25,15 @@ class SpeechRecognizer:
         Returns:
             speech_recognition.AudioData: 音声認識エンジンで受け取った音声データ
         """
-        print("何か話してください...")
+        print("Say something!")
         with self.mic as source:
-            self.rec.adjust_for_ambient_noise(source)
             audio = self.rec.listen(source)
         return audio
 
     def recognize_audio(self, audio: sr.AudioData) -> str:
-        print ("認識中...")
+        print("Understanting!")
         try:
-            speech = self.rec.recognize_google(audio, language='ja-JP')
+            speech = self.rec.recognize_whisper_api(audio, model='whisper-1', api_key=API_KEY))
         except sr.UnknownValueError:
             speech = f"#認識できませんでした"
             print(speech)
@@ -46,8 +49,8 @@ class SpeechRecognizer:
             audio = self.grab_audio()
             speech = self.recognize_audio(audio)
 
-            if speech == "終わり":
-                print("音声認識終了")
+            if speech == "Thank you":
+                print("Finishing!")
                 break
             else:
                 self.speech.append(speech)
