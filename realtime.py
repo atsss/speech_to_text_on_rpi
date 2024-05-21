@@ -1,6 +1,7 @@
 import os
 import speech_recognition as sr
 from datetime import datetime
+from concurrent import futures
 
 API_KEY = ''
 
@@ -11,7 +12,13 @@ class SpeechRecognizer:
 
         self.rec = sr.Recognizer()
         self.mic = sr.Microphone()
+
+        self.pool = futures.ThreadPoolExecutor(thread_name_prefix="Rec Thread")
         self.speech = []
+
+    def recognize_audio_thread_pool(self, audio, event=None):
+        future = self.pool.submit(self.recognize_audio, audio)
+        self.speech.append(future)
 
     def grab_audio(self) -> sr.AudioData:
         print("Say something!")
@@ -39,16 +46,15 @@ class SpeechRecognizer:
         try:
             while True:
                 audio = self.grab_audio()
-                speech = self.recognize_audio(audio)
-
-                self.speech.append(speech)
-                print(speech)
+                self.recognize_audio_thread_pool(audio)
         except KeyboardInterrupt:
           print("Finished")
         finally:
             with open(self.path, mode='w', encoding="utf-8") as out:
                 out.write(datetime.now().strftime('%Y%m%d_%H:%M:%S') + "\n\n")
-                out.write("\n".join(self.speech) + "\n")
+                for future in futures.as_completed(self.speech):
+                    print(future.result())
+                    out.write(f"{future.result()}\n")
 
 if __name__ == "__main__":
     sp = SpeechRecognizer()
