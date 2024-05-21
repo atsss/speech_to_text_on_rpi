@@ -6,3 +6,4 @@ numpy
 openai-whisper
 soundfile
 openai
+piper-tts
