@@ -51,8 +51,9 @@ class SpeechRecognizer:
           print("Finished")
         finally:
             with open(self.path, mode='w', encoding="utf-8") as out:
-                out.write(datetime.now().strftime('%Y%m%d_%H:%M:%S') + "\n\n")
-                for future in futures.as_completed(self.speech):
+                futures.wait(self.speech)
+
+                for future in self.speech:
                     print(future.result())
                     out.write(f"{future.result()}\n")
 
