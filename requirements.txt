@@ -7,3 +7,4 @@ openai-whisper
 soundfile
 openai
 piper-tts
+openwakeword
